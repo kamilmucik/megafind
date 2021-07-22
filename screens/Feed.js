@@ -7,6 +7,8 @@ import {
   StyleSheet,
   FlatList,
   ActivityIndicator,
+  TextInput,
+  Button
 } from 'react-native';
 import PackageJson from '../package'    // where package is the package.json file
 
@@ -16,6 +18,7 @@ function Feed({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [dataSource, setDataSource] = useState([]);
   const [offset, setOffset] = useState(1);
+  const [searchEan, setSearchEan] = useState('ean');
 
   useEffect(() => getData(), []);
 
@@ -95,6 +98,16 @@ function Feed({ navigation }) {
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.container}>
       <Text>v: {PackageJson.version} </Text>
+        <Text>ean: {searchEan}</Text>
+      <TextInput 
+        placeholder='EAN'
+        keyboardType = 'numeric'
+        value={searchEan}
+        onChangeText={(text) => setSearchEan(text)}
+        />
+      <Button 
+        title='Szukaj'
+        />
         <FlatList
           data={dataSource}
           keyExtractor={(item, index) => index.toString()}
@@ -105,12 +118,6 @@ function Feed({ navigation }) {
         />
       </View>
     </SafeAreaView>
-    // <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-    //   <Text>Wyszukiwarka produktów</Text>
-    //   <Text>wersja {PackageJson.version} </Text>
-      
-
-    // </View>
   );
 }
 

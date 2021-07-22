@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import * as ImagePicker from "react-native-image-picker"
-import { StyleSheet, Text, View, TouchableOpacity, Button, Image, PermissionsAndroid } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Button, Image, SafeAreaView,PermissionsAndroid } from 'react-native';
 
 const requestCameraPermission = async () => {
   try {
@@ -41,7 +41,8 @@ class AddItem extends Component {
       debugInfo: '',
       fileData: '',
       fileBase64: '',
-      fileUri: ''
+      fileUri: '',
+      inputEAN: ''
     }
   }
 
@@ -87,11 +88,12 @@ class AddItem extends Component {
         alert(response.customButton);
       } else {
         // const source = { uri: response.uri };
-        console.log('response b', JSON.stringify(response));
+        // console.log('response b', JSON.stringify(response));
         this.setState({
           filePath: response,
           fileData: response.data,
-          fileUri: response.assets[0].uri
+          fileUri: response.assets[0].uri,
+          fileBase64: response.assets[0].base64
         });
         // this.setState({resourcePath: response});
       }
@@ -185,7 +187,7 @@ class AddItem extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={{flex: 1}}>
         {/* <View style={styles.ImageSections}>
               <View>
                 {this.renderFileData()}
@@ -197,7 +199,13 @@ class AddItem extends Component {
               </View>
             </View> */}
         <View style={styles.container}>
-
+        <Text>ean: {this.state.inputEAN}</Text>
+        <TextInput 
+          placeholder='EAN'
+          keyboardType = 'numeric'
+          value={this.state.inputEAN}
+          onChangeText={(text) => this.setState({inputEAN:text})}
+        />
           {/* <Image
             source={{
               uri: 'data:image/jpeg;base64,' + this.state.fileData,
@@ -223,7 +231,7 @@ class AddItem extends Component {
               <Text style={styles.buttonText}>Select File</Text>
           </TouchableOpacity>       
         </View>
-      </View>
+      </SafeAreaView>
     );
   }
 }
