@@ -52,9 +52,9 @@ class AddItem extends Component {
     let options = {
       includeBase64: true,
       mediaType: 'photo',
-      maxWidth: 200,
-      maxHeight: 200,
-      quality: 0.8,
+      maxWidth: 640,
+      maxHeight: 480,
+      // quality: 0.8,
       storageOptions: {
         skipBackup: true,
         path: 'images',
