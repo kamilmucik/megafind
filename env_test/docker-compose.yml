@@ -1,0 +1,50 @@
+version: '3'
+services:
+    php-apache:
+        build:
+            context: ./php-apache
+        ports:
+            -  80:80
+        volumes:
+            - ./DocumentRoot:/var/www/html
+        networks:
+          app_net4:
+            ipv4_address: 10.99.103.4
+    mysql:
+        image: mysql:5
+        command: --default-authentication-plugin=mysql_native_password
+        container_name: package_mysql
+        volumes:
+          - ./sql/dump.sql:/docker-entrypoint-initdb.d/dump.sql
+        ports:
+            - 3306:3306
+        environment:
+            MYSQL_USER: user
+            MYSQL_PASSWORD: user
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: packages
+        networks:
+          app_net4:
+            ipv4_address: 10.99.103.2
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: package_pma
+        links:
+            - mysql
+        environment:
+            PMA_HOST: mysql
+            PMA_PORT: 3306
+            PMA_ARBITRARY: 1
+        restart: always
+        ports:
+            - 8183:80
+        networks:
+          app_net4:
+            ipv4_address: 10.99.103.3
+networks:
+  app_net4:
+    ipam:
+      driver: default
+      config:
+        - subnet: "10.99.103.0/24"
