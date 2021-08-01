@@ -16,14 +16,14 @@ const requestCameraPermission = async () => {
     );
     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
       console.log("Camera permission given");
-      this.setState({
-        debugInfo: 'Camera permission given'
-      });
+      // this.setState({
+      //   debugInfo: 'Camera permission given'
+      // });
     } else {
       console.log("Camera permission denied");
-      this.setState({
-        debugInfo: 'Camera permission denied'
-      });
+      // this.setState({
+      //   debugInfo: 'Camera permission denied'
+      // });
     }
   } catch (err) {
     console.warn(err);
@@ -72,27 +72,27 @@ class AddItem extends Component {
 
       if (response.didCancel) {
         console.log('User cancelled image picker');
-        this.setState({
-          debugInfo: 'User cancelled image picker'
-        });
+        // this.setState({
+        //   debugInfo: 'User cancelled image picker'
+        // });
       } else if (response.error) {
         console.log('ImagePicker Error: ', response.error);
-        this.setState({
-          debugInfo: 'ImagePicker Error: '+ response.error
-        });
+        // this.setState({
+        //   debugInfo: 'ImagePicker Error: '+ response.error
+        // });
       } else if (response.customButton) {
         console.log('User tapped custom button: ', response.customButton);
-        this.setState({
-          debugInfo: 'User tapped custom button'
-        });
+        // this.setState({
+        //   debugInfo: 'User tapped custom button'
+        // });
         alert(response.customButton);
       } else {
         // const source = { uri: response.uri };
-        // console.log('response b', JSON.stringify(response));
+        console.log('response b', JSON.stringify(response));
         this.setState({
           filePath: response,
           fileData: response.data,
-          fileUri: response.assets[0].uri,
+          // fileUri: response.assets[0].uri,
           fileBase64: response.assets[0].base64
         });
         // this.setState({resourcePath: response});
@@ -123,29 +123,29 @@ class AddItem extends Component {
         maxWidth: 200,
       },
       (response) => {
-        this.setState({
-          debugInfo: 'response gallery'
-        });
+        // this.setState({
+        //   debugInfo: 'response gallery'
+        // });
   
         if (response.didCancel) {
-          // console.log('User cancelled image picker');
-          this.setState({
-            debugInfo: 'User cancelled image picker'
-          });
+          console.log('User cancelled image picker');
+          // this.setState({
+          //   debugInfo: 'User cancelled image picker'
+          // });
         } else if (response.error) {
-          // console.log('ImagePicker Error: ', response.error);
-          this.setState({
-            debugInfo: 'ImagePicker Error: '+ response.error
-          });
+          console.log('ImagePicker Error: ', response.error);
+          // this.setState({
+          //   debugInfo: 'ImagePicker Error: '+ response.error
+          // });
         } else if (response.customButton) {
-          // console.log('User tapped custom button: ', response.customButton);
-          this.setState({
-            debugInfo: 'User tapped custom button'
-          });
+          console.log('User tapped custom button: ', response.customButton);
+          // this.setState({
+          //   debugInfo: 'User tapped custom button'
+          // });
           alert(response.customButton);
         } else {
           // const source = { uri: response.uri };
-          // console.log('response b', JSON.stringify(response));
+          console.log('response b', JSON.stringify(response));
           this.setState({
             filePath: response,
             fileData: response.data,
