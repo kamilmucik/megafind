@@ -42,6 +42,14 @@ $num = $stmt->rowCount();
          <link rel="stylesheet" href="vendor/bootstrap.min.css">
          <script src="vendor/jquery.min.js"></script>
          <script src="vendor/bootstrap.min.js"></script>
+         <style>
+           .tile {
+            padding: 8px;
+            float: left;
+            overflow: hidden;
+           }
+        </style>
+
 <head>
 <body>
 
@@ -61,49 +69,25 @@ data-toggle="collapse" data-target="#myNavbar">
 </nav>
 
 <div class="panel-body">
-<a href="/edit.php" class="btn btn-primary btn-lg btn-block"
-role="button">Dodaj</a>
-<table class="table table-hover">
-         <thead>
-                 <tr>
-                         <th>_ean</th>
-                         <th>_image1_base64</th>
-                         <th></th>
-                 </tr>
-         </thead>
-         <tbody>
+<a href="/edit.php" class="btn btn-primary btn-lg btn-block" role="button">Dodaj</a>
 
-         <?php
-         if($num>0){
+<div>
+<?php
+  if($num>0){
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+      extract($row);
+      echo '<div class="tile">
+      <img src="data:image/png;base64, '.$row['_image1_base64'].'" alt="Red dot" />
+      <p>'.$row['_ean'].'</p>
+      <a href="?del='.$row['id'].'" role="button">
+        <img class="img-responsive center-block" style="width: 32px;" src="vendor/delete-icon.png" alt="zobacz">
+      </a>
+      </div>';
+    }
+  }
+?>
+</div>
 
-                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-                         extract($row);
-
-                         echo '<tr>
-
-<td>'.$row['_ean'].'</td>
-<td>'.$row['_image1_base64'].'</td>
-<td>
-                                                 <a
-href="./edit.php?id='.$row['id'].'" role="button">
-                                                         <img
-class="img-responsive center-block" style="width: 32px;"
-src="vendor/edit-icon.png" alt="zobacz">
-                                                 </a>
-                                                 <a
-href="?del='.$row['id'].'" role="button">
-                                                         <img
-class="img-responsive center-block" style="width: 32px;"
-src="vendor/delete-icon.png" alt="zobacz">
-                                                 </a>
-                                         </td>
-                                 </tr>';
-                 }
-         }
-         ?>
-
-         </tbody>
-</table>
 </div>
 
 <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog"
@@ -126,7 +110,7 @@ data-dismiss="modal">Anuluj</button>
 </div>
 
 <footer class="container-fluid text-center">
-   <p>2020 Kamil Mucik</p>
+   <p>2021 Kamil Mucik</p>
 </footer>
 
 </body>

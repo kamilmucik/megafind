@@ -21,17 +21,17 @@ $stmt = $appVersion->readAll();
 $num = $stmt->rowCount();
 if($num>0){
     $version_arr=array();
-    $version_arr["records"]=array();
+    $version_arr["results"]=array();
  
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
         extract($row);
  
         $version_item=array(
             "id" => $id,
-            "number" => $number,
-            "description" => $_description
+            "_ean" => $_ean,
+            "_image1_base64" => $_image1_base64
         );
-        array_push($version_arr["records"], $version_item);
+        array_push($version_arr["results"], $version_item);
     }
     echo json_encode($version_arr);
 }else{

@@ -8,6 +8,7 @@ import { CustomBackButton } from './components/CustomBackButton';
 import Settings from './screens/Settings';
 import AddItem from './screens/AddItem';
 import Feed from './screens/Feed';
+import Detail from './screens/Detail';
 import { Component } from 'react/cjs/react.production.min';
 
 const Stack = createStackNavigator();
@@ -35,12 +36,18 @@ export default class App extends Component{
                           ),
                         })}
                         />
-          <Stack.Screen name="AddItem" 
-                        component={AddItem} 
-                        options={{ 
-                          title: 'Dodaj zdjęcia',
-                          headerBackImage: ()=>(<Text>Wróć</Text>),
-                        }}/>
+        <Stack.Screen name="AddItem" 
+                      component={AddItem} 
+                      options={{ 
+                        title: 'Dodaj zdjęcia',
+                        headerBackImage: ()=>(<Text>Wróć</Text>),
+                      }}/>
+        <Stack.Screen name="Detail" 
+                      component={Detail} 
+                      options={{ 
+                        title: 'Szczegóły',
+                        headerBackImage: ()=>(<Text>Wróć</Text>),
+                      }}/>
           <Stack.Screen name="Settings" 
                         component={Settings} 
                         options={{ 

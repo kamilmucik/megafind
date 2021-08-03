@@ -18,7 +18,7 @@ function Feed({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [dataSource, setDataSource] = useState([]);
   const [offset, setOffset] = useState(1);
-  const [searchEan, setSearchEan] = useState('ean');
+  const [searchEan, setSearchEan] = useState('');
 
   useEffect(() => getData(), []);
 
@@ -26,7 +26,7 @@ function Feed({ navigation }) {
     console.log('getData');
     setLoading(true);
     //Service to get the data from the server to render
-    fetch('https://aboutreact.herokuapp.com/getpost.php?offset='
+    fetch('http://e-strix.pl/megapack/megafind/api/index.php?offset='
           + offset)
       //Sending the currect offset with get request
       .then((response) => response.json())
@@ -68,9 +68,9 @@ function Feed({ navigation }) {
       <Text
         style={styles.itemStyle}
         onPress={() => getItem(item)}>
-        {item.id}
-        {'.'}
-        {item.title.toUpperCase()}
+        {/* {item.id}
+        {'.'} */}
+        {item._ean.toUpperCase()}
       </Text>
     );
   };
@@ -90,7 +90,13 @@ function Feed({ navigation }) {
 
   const getItem = (item) => {
     //Function for click on an item
-    alert('Id : ' + item.id + ' Title : ' + item.title);
+    // alert('Id : ' + item.id + ' Title : ' + item._ean);
+    navigation.navigate('Detail', {
+      itemId: item.id,
+      _ean: item._ean,
+      _image1_base64: item._image1_base64,
+    });
+
   };
 
 

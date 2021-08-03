@@ -42,19 +42,18 @@ class AddItem extends Component {
       fileData: '',
       fileBase64: '',
       fileUri: '',
-      inputEAN: ''
+      inputEAN: '',
+      loading: true
     }
   }
-
-  
 
   launchCamera = () => {
     let options = {
       includeBase64: true,
       mediaType: 'photo',
-      maxWidth: 200,
-      maxHeight: 200,
-      quality: 0.8,
+      maxWidth: 800,
+      maxHeight: 600,
+      quality: 1.0,
       storageOptions: {
         skipBackup: true,
         path: 'images',
@@ -88,11 +87,11 @@ class AddItem extends Component {
         alert(response.customButton);
       } else {
         // const source = { uri: response.uri };
-        console.log('response b', JSON.stringify(response));
+        // console.log('response b', JSON.stringify(response));
         this.setState({
           filePath: response,
           fileData: response.data,
-          // fileUri: response.assets[0].uri,
+          fileUri: response.assets[0].uri,
           fileBase64: response.assets[0].base64
         });
         // this.setState({resourcePath: response});
@@ -145,7 +144,7 @@ class AddItem extends Component {
           alert(response.customButton);
         } else {
           // const source = { uri: response.uri };
-          console.log('response b', JSON.stringify(response));
+          // console.log('response b', JSON.stringify(response));
           this.setState({
             filePath: response,
             fileData: response.data,
@@ -158,10 +157,40 @@ class AddItem extends Component {
     )
   };
 
+  sendToServer = () => {
+    // console.log('sendToServer: ' + this.state.fileBase64);
+    this.setState({
+      debugInfo: 'sendToServer' + this.state.inputEAN,
+      loading: true
+    });
+    fetch('http://e-strix.pl/megapack/megafind/api/create.php', {
+      method: 'POST',
+      headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        _ean: this.state.inputEAN,
+        _image1_base64: this.state.fileBase64
+      })
+  })
+  .then((response) => response.json())
+      .then((responseJson) => {
+        //Successful response
+        //Increasing the offset for the next API call
+        this.setState({
+          debugInfo:  responseJson.message ,
+          loading: false
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   renderFileData() {
-    if (this.state.fileData) {
-      return <Image source={{ uri: 'data:image/jpeg;base64,' + this.state.fileData }}
+    if (this.state.fileBase64) {
+      return <Image source={{ uri: 'data:image/jpeg;base64,' + this.state.fileBase64 }}
         style={styles.images}
       />
     } else {
@@ -188,16 +217,6 @@ class AddItem extends Component {
   render() {
     return (
       <SafeAreaView style={{flex: 1}}>
-        {/* <View style={styles.ImageSections}>
-              <View>
-                {this.renderFileData()}
-                <Text  style={{textAlign:'center'}}>Base 64 String</Text>
-              </View>
-              <View>
-                {this.renderFileUri()}
-                <Text style={{textAlign:'center'}}>File Uri</Text>
-              </View>
-            </View> */}
         <View style={styles.container}>
         <Text>ean: {this.state.inputEAN}</Text>
         <TextInput 
@@ -206,22 +225,15 @@ class AddItem extends Component {
           value={this.state.inputEAN}
           onChangeText={(text) => this.setState({inputEAN:text})}
         />
-          {/* <Image
-            source={{
-              uri: 'data:image/jpeg;base64,' + this.state.fileData,
-            }}
-            style={{ width: 100, height: 100 }}
-          /> */}
           <Image
-            source={{ uri: this.state.fileUri }}
+            source={{
+              uri: 'data:image/jpeg;base64,' + this.state.fileBase64,
+            }}
             style={{ width: 200, height: 200 }}
           />
 
           <Text style={{ alignItems: 'center' }}>
             {this.state.debugInfo}
-          </Text>
-          <Text style={{ alignItems: 'center' }}>
-            {this.state.fileUri}
           </Text>
           <TouchableOpacity onPress={this.launchCamera} style={styles.btnSection}  >
             <Text style={styles.btnText}>Directly Launch Camera</Text>
@@ -229,6 +241,10 @@ class AddItem extends Component {
 
           <TouchableOpacity onPress={this.selectFile} style={styles.button}  >
               <Text style={styles.buttonText}>Select File</Text>
+          </TouchableOpacity>  
+
+          <TouchableOpacity onPress={this.sendToServer} style={styles.button}  >
+              <Text style={styles.buttonText}>Wyślij na serwer</Text>
           </TouchableOpacity>       
         </View>
       </SafeAreaView>
@@ -239,7 +255,7 @@ class AddItem extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 30,
+    padding: 5,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#fff'
@@ -251,7 +267,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 4,
-    marginBottom:12    
+    marginBottom:4  
   },
 
   btnSection: {
