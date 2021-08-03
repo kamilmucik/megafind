@@ -4,9 +4,8 @@ pipeline {
         ANDROID_HOME= "/Users/kamilmucik/Library/Android/sdk"
         ANDROID_SDK_ROOT= "/Users/kamilmucik/Library/Android/sdk"
         ANDROID_AVD_HOME= "/Users/kamilmucik/.android/avd"
-        PATH = "$PATH:$ANDROID_HOME/sdk:$ANDROID_HOME/tools"
+        PATH = "$PATH:$ANDROID_HOME/sdk:$ANDROID_HOME/tools:/usr/local/bin/npx"
       }
-    
     stages {
         stage ('Prepare') {
           steps {
