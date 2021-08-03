@@ -6,7 +6,6 @@ pipeline {
         ANDROID_AVD_HOME= "/Users/kamilmucik/.android/avd"
         PATH = "$PATH:$ANDROID_HOME/sdk:$ANDROID_HOME/tools"
       }
-    
     stages {
         stage ('Prepare') {
           steps {
