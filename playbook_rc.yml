@@ -1,0 +1,9 @@
+---
+- name: This is a hello-world example
+  hosts: webserver
+  become: true
+  tasks:
+    - name: Copy APK to server
+      copy:
+        src: android/app/build/outputs/apk/debug/app-debug.apk
+        dest: /var/www/e-strix.pl/public_html/pobierz/apk_RC_jenkins.apk

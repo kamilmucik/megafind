@@ -1,9 +1,9 @@
 pipeline {
     agent any
     environment {
-        ANDROID_HOME= "/Users/kamilmucik/Library/Android/sdk"
-        ANDROID_SDK_ROOT= "/Users/kamilmucik/Library/Android/sdk"
-        ANDROID_AVD_HOME= "/Users/kamilmucik/.android/avd"
+        ANDROID_HOME= "~/Library/Android/sdk"
+        ANDROID_SDK_ROOT= "~/Library/Android/sdk"
+        ANDROID_AVD_HOME= "~/.android/avd"
         PATH = "$PATH:$ANDROID_HOME/sdk:$ANDROID_HOME/tools:/usr/local/bin"
       }
     parameters {
@@ -41,10 +41,8 @@ pipeline {
                 echo 'Deploying....'
                 echo "Hello user: ${YOUR_USERNAME}"
                 echo "Your password: ${YOUR_PASSWORD}"
-                echo "secret"
 
                 sh 'touch file.txt'
-                sh 'ansible -v'
 //                 wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [[var: 'KEY', password: KEY]], varMaskRegexes: []]) {
 //                             sh "echo ${KEY}"
 //                         }
