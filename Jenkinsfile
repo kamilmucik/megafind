@@ -39,14 +39,12 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying....'
-                echo "Hello ${params.YOUR_USERNAME}"
-                echo "Your password is ${YOUR_PASSWORD}"
+                echo "Hello user: ${YOUR_USERNAME}"
+                echo "Your password: ${YOUR_PASSWORD}"
                 echo "secret"
 
                 sh 'touch file.txt'
-                sh "sshpass -p ${YOUR_PASSWORD} scp file.txt ubuntu@e-strix.pl:/var/www/e-strix.pl/public_html/pobierz/"
-
-                sh 'rsync -v'
+                sh 'ansible -v'
 //                 wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [[var: 'KEY', password: KEY]], varMaskRegexes: []]) {
 //                             sh "echo ${KEY}"
 //                         }
