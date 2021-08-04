@@ -6,11 +6,10 @@ pipeline {
         ANDROID_AVD_HOME= "/Users/kamilmucik/.android/avd"
         PATH = "$PATH:$ANDROID_HOME/sdk:$ANDROID_HOME/tools:/usr/local/bin"
       }
-      properties([
-          parameters([
-              password(name: 'KEY', description: 'Encryption key')
-          ])
-      ])
+    parameters {
+        string(name: 'YOUR_USERNAME', defaultValue: 'ubuntu')
+        password(name: 'YOUR_PASSWORD', defaultValue: 'secret')
+      }
     stages {
         stage ('Prepare') {
           steps {
@@ -40,10 +39,16 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying....'
+                echo "Hello ${params.YOUR_USERNAME}"
+                echo "Your password is ${params.YOUR_PASSWORD}"
+                echo "secret"
 
-                wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [[var: 'KEY', password: KEY]], varMaskRegexes: []]) {
-                            sh "echo ${KEY}"
-                        }
+                sh 'file.txt'
+                sh "sshpass -p ${params.YOUR_PASSWORD} scp file.txt ubuntu@e-strix.pl:/var/www/e-strix.pl/public_html/pobierz/"
+
+//                 wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [[var: 'KEY', password: KEY]], varMaskRegexes: []]) {
+//                             sh "echo ${KEY}"
+//                         }
 //                 withCredentials([string(credentialsId: 'pass', variable: 'password1')]) {
 //                     echo "'${password1}'!"
 //                 }
