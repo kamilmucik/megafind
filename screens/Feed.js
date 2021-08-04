@@ -26,7 +26,7 @@ function Feed({ navigation }) {
     console.log('getData');
     setLoading(true);
     //Service to get the data from the server to render
-    fetch('http://e-strix.pl/megapack/megafind/api/index.php?offset='
+    fetch('http://e-strix.pl/megafind/api/index.php?offset='
           + offset)
       //Sending the currect offset with get request
       .then((response) => response.json())
