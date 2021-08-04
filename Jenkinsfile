@@ -6,6 +6,11 @@ pipeline {
         ANDROID_AVD_HOME= "/Users/kamilmucik/.android/avd"
         PATH = "$PATH:$ANDROID_HOME/sdk:$ANDROID_HOME/tools:/usr/local/bin"
       }
+      properties([
+          parameters([
+              password(name: 'KEY', description: 'Encryption key')
+          ])
+      ])
     stages {
         stage ('Prepare') {
           steps {
@@ -15,17 +20,16 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building..'
-                script {
-                    try {
-                        sh 'npm install'
-                        sh 'rm -rf android/app/src/main/res/drawable-*'
-                        sh 'npx mkdirp android/app/src/main/assets/ && react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/'
-                        sh 'cd android/ && ./gradlew assembleDebug'
-                        // sh 'gradle clean android -b collector/build.gradle'
-                    } finally { //Make checkstyle results available
-                        //checkstyle canComputeNew: false, defaultEncoding: '', healthy: '', pattern: 'publicapi/frontend/tslint-result.xml', unHealthy: ''
-                    }
-                }
+//                 script {
+//                     try {
+//                         sh 'npm install'
+//                         sh 'rm -rf android/app/src/main/res/drawable-*'
+//                         sh 'npx mkdirp android/app/src/main/assets/ && react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/'
+//                         sh 'cd android/ && ./gradlew assembleDebug'
+//                     } finally { //Make checkstyle results available
+//                         //checkstyle canComputeNew: false, defaultEncoding: '', healthy: '', pattern: 'publicapi/frontend/tslint-result.xml', unHealthy: ''
+//                     }
+//                 }
             }
         }
         stage('Test') {
@@ -36,6 +40,25 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying....'
+
+                wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [[var: 'KEY', password: KEY]], varMaskRegexes: []]) {
+                            sh "echo ${KEY}"
+                        }
+//                 withCredentials([string(credentialsId: 'pass', variable: 'password1')]) {
+//                     echo "'${password1}'!"
+//                 }
+
+// stage('Deploy') {
+//             when {
+//               expression {
+//                 currentBuild.result == null || currentBuild.result == 'SUCCESS'
+//               }
+//             }
+//             steps {
+//                 sh 'make publish'
+//             }
+//         }
+//                 sh 'scp android/app/build/outputs/apk/debug/app-debug.apk ubuntu@e-strix.pl:/var/www/e-strix.pl/public_html/pobierz/megafind-0.0.1_RC.apk'
             }
         }
     }
