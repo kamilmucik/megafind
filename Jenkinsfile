@@ -40,12 +40,13 @@ pipeline {
             steps {
                 echo 'Deploying....'
                 echo "Hello ${params.YOUR_USERNAME}"
-                echo "Your password is ${params.YOUR_PASSWORD}"
+                echo "Your password is ${YOUR_PASSWORD}"
                 echo "secret"
 
                 sh 'touch file.txt'
-                sh "sshpass -p ${params.YOUR_PASSWORD} scp file.txt ubuntu@e-strix.pl:/var/www/e-strix.pl/public_html/pobierz/"
+                sh "sshpass -p ${YOUR_PASSWORD} scp file.txt ubuntu@e-strix.pl:/var/www/e-strix.pl/public_html/pobierz/"
 
+                sh 'rsync -v'
 //                 wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [[var: 'KEY', password: KEY]], varMaskRegexes: []]) {
 //                             sh "echo ${KEY}"
 //                         }
