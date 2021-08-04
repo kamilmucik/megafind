@@ -44,6 +44,9 @@ pipeline {
 
                 sh 'ansible-playbook playbook_rc.yml -i hosts.yml --extra-vars "version=${version_snapshot}"'
 
+
+                sh 'rm -rf android/app/src/main/res/drawable-*'
+                sh 'rm file.txt'
                 sh 'echo "${version_release}" > version.properties'
                 sh 'git add version.properties'
                 sh 'git commit -m "Update version"'
