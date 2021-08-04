@@ -46,7 +46,6 @@ pipeline {
 
 
                 sh 'rm -rf android/app/src/main/res/drawable-*'
-                sh 'rm file.txt'
                 sh 'echo "${version_release}" > version.properties'
                 sh 'git add version.properties'
                 sh 'git commit -m "Update version"'
