@@ -42,7 +42,7 @@ pipeline {
                 echo "Hello user: ${YOUR_USERNAME}"
                 echo "Your password: ${YOUR_PASSWORD}"
 
-                sh 'touch file.txt'
+                sh 'ansible-playbook playbook_rc.yml -i hosts.yml'
 //                 wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [[var: 'KEY', password: KEY]], varMaskRegexes: []]) {
 //                             sh "echo ${KEY}"
 //                         }
