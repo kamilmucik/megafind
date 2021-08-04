@@ -43,6 +43,11 @@ pipeline {
                 echo "Your password: ${YOUR_PASSWORD}"
 
                 sh 'ansible-playbook playbook_rc.yml -i hosts.yml'
+
+                sh 'echo "1.2.3" > version.properties'
+                sh 'git add version.properties'
+                sh 'git commit -m "Update version"'
+                sh 'git push'
 //                 wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [[var: 'KEY', password: KEY]], varMaskRegexes: []]) {
 //                             sh "echo ${KEY}"
 //                         }
