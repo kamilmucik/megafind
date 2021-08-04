@@ -43,7 +43,7 @@ pipeline {
                 echo "Your password is ${params.YOUR_PASSWORD}"
                 echo "secret"
 
-                sh 'file.txt'
+                sh 'touch file.txt'
                 sh "sshpass -p ${params.YOUR_PASSWORD} scp file.txt ubuntu@e-strix.pl:/var/www/e-strix.pl/public_html/pobierz/"
 
 //                 wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [[var: 'KEY', password: KEY]], varMaskRegexes: []]) {
