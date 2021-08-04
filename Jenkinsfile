@@ -47,7 +47,7 @@ pipeline {
                 sh 'echo "1.2.3" > version.properties'
                 sh 'git add version.properties'
                 sh 'git commit -m "Update version"'
-                sh 'git push'
+                sh 'git push origin HEAD:master'
 //                 wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [[var: 'KEY', password: KEY]], varMaskRegexes: []]) {
 //                             sh "echo ${KEY}"
 //                         }
