@@ -6,4 +6,4 @@
     - name: Copy APK to server
       copy:
         src: android/app/build/outputs/apk/debug/app-debug.apk
-        dest: /var/www/e-strix.pl/public_html/pobierz/apk_RC_{{ version }}_jenkins.apk
+        dest: /var/www/e-strix.pl/public_html/pobierz/megafind_{{ version }}.apk
