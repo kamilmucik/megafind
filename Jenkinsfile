@@ -1,9 +1,9 @@
 pipeline {
     agent any
     environment {
-        ANDROID_HOME= "~/Library/Android/sdk"
-        ANDROID_SDK_ROOT= "~/Library/Android/sdk"
-        ANDROID_AVD_HOME= "~/.android/avd"
+        ANDROID_HOME= "/Users/kamilmucik/Library/Android/sdk"
+        ANDROID_SDK_ROOT= "/Users/kamilmucik/Library/Android/sdk"
+        ANDROID_AVD_HOME= "/Users/kamilmucik/.android/avd"
         PATH = "$PATH:$ANDROID_HOME/sdk:$ANDROID_HOME/tools:/usr/local/bin"
       }
     parameters {
