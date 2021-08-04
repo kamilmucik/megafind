@@ -7,6 +7,8 @@ pipeline {
         PATH = "$PATH:$ANDROID_HOME/sdk:$ANDROID_HOME/tools:/usr/local/bin"
       }
     parameters {
+        string(name: 'version_release', defaultValue: '0.0.1', description: 'Wersja publikacji')
+        string(name: 'version_snapshot', defaultValue: '0.0.2-RC', description: 'Wersja rozwojowa')
         string(name: 'YOUR_USERNAME', defaultValue: 'ubuntu')
         password(name: 'YOUR_PASSWORD', defaultValue: 'secret')
       }
@@ -19,16 +21,16 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building..'
-//                 script {
-//                     try {
-//                         sh 'npm install'
-//                         sh 'rm -rf android/app/src/main/res/drawable-*'
-//                         sh 'npx mkdirp android/app/src/main/assets/ && react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/'
-//                         sh 'cd android/ && ./gradlew assembleDebug'
-//                     } finally { //Make checkstyle results available
-//                         //checkstyle canComputeNew: false, defaultEncoding: '', healthy: '', pattern: 'publicapi/frontend/tslint-result.xml', unHealthy: ''
-//                     }
-//                 }
+                script {
+                    try {
+                        sh 'npm install'
+                        sh 'rm -rf android/app/src/main/res/drawable-*'
+                        sh 'npx mkdirp android/app/src/main/assets/ && react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/'
+                        sh 'cd android/ && ./gradlew assembleDebug'
+                    } finally { //Make checkstyle results available
+                        //checkstyle canComputeNew: false, defaultEncoding: '', healthy: '', pattern: 'publicapi/frontend/tslint-result.xml', unHealthy: ''
+                    }
+                }
             }
         }
         stage('Test') {
@@ -39,22 +41,13 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying....'
-                echo "Hello user: ${YOUR_USERNAME}"
-                echo "Your password: ${YOUR_PASSWORD}"
 
-                sh 'ansible-playbook playbook_rc.yml -i hosts.yml'
+                sh 'ansible-playbook playbook_rc.yml -i hosts.yml --extra-vars "version=${version_snapshot}"'
 
-                sh 'echo "1.2.3" > version.properties'
+                sh 'echo "${version_release}" > version.properties'
                 sh 'git add version.properties'
                 sh 'git commit -m "Update version"'
                 sh 'git push origin HEAD:master'
-//                 wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [[var: 'KEY', password: KEY]], varMaskRegexes: []]) {
-//                             sh "echo ${KEY}"
-//                         }
-//                 withCredentials([string(credentialsId: 'pass', variable: 'password1')]) {
-//                     echo "'${password1}'!"
-//                 }
-
 // stage('Deploy') {
 //             when {
 //               expression {
@@ -65,7 +58,6 @@ pipeline {
 //                 sh 'make publish'
 //             }
 //         }
-//                 sh 'scp android/app/build/outputs/apk/debug/app-debug.apk ubuntu@e-strix.pl:/var/www/e-strix.pl/public_html/pobierz/megafind-0.0.1_RC.apk'
             }
         }
     }
