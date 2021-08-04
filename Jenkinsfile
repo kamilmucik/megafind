@@ -17,6 +17,7 @@ pipeline {
                 echo 'Building..'
                 script {
                     try {
+                        sh 'npm install'
                         sh 'rm -rf android/app/src/main/res/drawable-*'
                         sh 'npx mkdirp android/app/src/main/assets/ && react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/'
                         sh 'cd android/ && ./gradlew assembleDebug'
