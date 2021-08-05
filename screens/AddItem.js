@@ -123,7 +123,7 @@ class AddItem extends Component {
       debugInfo: 'sendToServer' + this.state.inputEAN,
       loading: true
     });
-    fetch('http://192.168.49.103/api/create.php', {
+    fetch('http://e-strix.pl/megafind/api/create.php', {
       method: 'POST',
       headers: {
           Accept: 'application/json',
