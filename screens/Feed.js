@@ -15,26 +15,25 @@ import PackageJson from '../package'    // where package is the package.json fil
 
 function Feed({ navigation }) {
 
+  const defaultList = [];
+
   const [loading, setLoading] = useState(true);
-  const [dataSource, setDataSource] = useState([]);
-  const [offset, setOffset] = useState(1);
+  const [dataSource, setDataSource] = useState(defaultList);
   const [searchEan, setSearchEan] = useState('');
 
-  useEffect(() => getData(), []);
+  useEffect(() => getData(), defaultList);
 
   const getData = () => {
     console.log('getData');
     setLoading(true);
     //Service to get the data from the server to render
-    fetch('http://e-strix.pl/megafind/api/index.php?offset='
-          + offset)
+    fetch('http://e-strix.pl/megafind/api/index.php?query=' + searchEan)
       //Sending the currect offset with get request
       .then((response) => response.json())
       .then((responseJson) => {
         //Successful response
-        setOffset(offset + 1);
-        //Increasing the offset for the next API call
-        setDataSource([...dataSource, ...responseJson.results]);
+        setDataSource([...responseJson.results]); 
+        // setDataSource([...dataSource, ...responseJson.results]);
         setLoading(false);
       })
       .catch((error) => {
@@ -65,13 +64,13 @@ function Feed({ navigation }) {
   const ItemView = ({item}) => {
     return (
       // Flat List Item
-      <Text
-        style={styles.itemStyle}
-        onPress={() => getItem(item)}>
-        {/* {item.id}
-        {'.'} */}
-        {item._ean.toUpperCase()}
-      </Text>
+      <View >
+        <Text
+          style={styles.itemStyle}
+          onPress={() => getItem(item)}>
+          {item._ean.toUpperCase()}
+        </Text>
+      </View>
     );
   };
 
@@ -80,7 +79,7 @@ function Feed({ navigation }) {
       // Flat List Item Separator
       <View
         style={{
-          height: 0.5,
+          height: 1,
           width: '100%',
           backgroundColor: '#C8C8C8',
         }}
@@ -103,24 +102,34 @@ function Feed({ navigation }) {
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.container}>
-      <Text>v: {PackageJson.version} </Text>
-        <Text>ean: {searchEan}</Text>
+      <Text style={styles.versionText}>v: {PackageJson.version} </Text>
       <TextInput 
         placeholder='EAN'
         keyboardType = 'numeric'
+        style={styles.inputField}
         value={searchEan}
         onChangeText={(text) => setSearchEan(text)}
         />
-      <Button 
-        title='Szukaj'
-        />
+      <View >
+        <TouchableOpacity
+          activeOpacity={0.9}
+          onPress={getData}
+          style={styles.loadMoreBtn}>
+          <Text style={styles.btnText}>Wyszukaj</Text>
+          {loading ? (
+            <ActivityIndicator
+              color="white"
+              style={{marginLeft: 8}} />
+          ) : null}
+        </TouchableOpacity>
+      </View>
         <FlatList
           data={dataSource}
           keyExtractor={(item, index) => index.toString()}
           ItemSeparatorComponent={ItemSeparatorView}
           enableEmptySections={true}
           renderItem={ItemView}
-          ListFooterComponent={renderFooter}
+          // ListFooterComponent={renderFooter}
         />
       </View>
     </SafeAreaView>
@@ -139,8 +148,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   loadMoreBtn: {
-    padding: 10,
-    backgroundColor: '#800000',
+    margin: 20,
+    padding: 14,
+    backgroundColor: '#3740ff',
     borderRadius: 4,
     flexDirection: 'row',
     justifyContent: 'center',
@@ -148,8 +158,25 @@ const styles = StyleSheet.create({
   },
   btnText: {
     color: 'white',
-    fontSize: 15,
+    fontSize: 17,
     textAlign: 'center',
+  },
+  inputField: {
+    color: 'black',
+    fontSize: 17,
+    textAlign: 'center',
+    borderColor: 'black',
+    borderBottomWidth: 1
+  },
+  itemStyle: {
+    color: 'black',
+    fontSize: 17,
+    padding: 10,
+  },
+  versionText: {
+    color: 'gray',
+    fontSize: 10,
+    textAlign: 'right',
   },
 });
 

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, View, Text,TouchableOpacity } from 'react-native';
+import { Text,TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -14,8 +14,6 @@ import { Component } from 'react/cjs/react.production.min';
 const Stack = createStackNavigator();
 
 export default class App extends Component{
-
-
   render(){
     return (
       <NavigationContainer>
@@ -26,12 +24,12 @@ export default class App extends Component{
                           title: 'Wyszukaj' ,
                           headerLeft: () => (
                             <TouchableOpacity onPress={() => navigation.navigate("AddItem")} > 
-                              <Text style={{color: 'black'}}>Dodaj</Text>
+                              <Text style={{color: 'black', marginLeft: 10}}>Dodaj</Text>
                             </TouchableOpacity>
                           ),
                           headerRight: () => (
                             <TouchableOpacity onPress={() => navigation.navigate("Settings")} > 
-                              <Text style={{color: 'black'}}>Ustawienia</Text>
+                              <Text style={{color: 'black', marginRight: 10}}>Ustawienia</Text>
                             </TouchableOpacity>
                           ),
                         })}
