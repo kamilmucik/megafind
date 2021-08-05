@@ -16,14 +16,8 @@ const requestCameraPermission = async () => {
     );
     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
       console.log("Camera permission given");
-      // this.setState({
-      //   debugInfo: 'Camera permission given'
-      // });
     } else {
       console.log("Camera permission denied");
-      // this.setState({
-      //   debugInfo: 'Camera permission denied'
-      // });
     }
   } catch (err) {
     console.warn(err);
@@ -63,38 +57,20 @@ class AddItem extends Component {
     requestCameraPermission();
     
     ImagePicker.launchCamera(options, async (response) => {
-      // console.log('Response = ', response);
-      
-      // this.setState({
-      //   debugInfo: 'response camera' + JSON.stringify(response)
-      // });
-
       if (response.didCancel) {
         console.log('User cancelled image picker');
-        // this.setState({
-        //   debugInfo: 'User cancelled image picker'
-        // });
       } else if (response.error) {
         console.log('ImagePicker Error: ', response.error);
-        // this.setState({
-        //   debugInfo: 'ImagePicker Error: '+ response.error
-        // });
       } else if (response.customButton) {
         console.log('User tapped custom button: ', response.customButton);
-        // this.setState({
-        //   debugInfo: 'User tapped custom button'
-        // });
         alert(response.customButton);
       } else {
-        // const source = { uri: response.uri };
-        // console.log('response b', JSON.stringify(response));
         this.setState({
           filePath: response,
           fileData: response.data,
           fileUri: response.assets[0].uri,
           fileBase64: response.assets[0].base64
         });
-        // this.setState({resourcePath: response});
       }
     });
 
@@ -117,41 +93,25 @@ class AddItem extends Component {
     ImagePicker.launchImageLibrary(
       {
         mediaType: 'photo',
-        includeBase64: false,
+        includeBase64: true,
         maxHeight: 200,
         maxWidth: 200,
       },
-      (response) => {
-        // this.setState({
-        //   debugInfo: 'response gallery'
-        // });
-  
+      (response) => {  
         if (response.didCancel) {
           console.log('User cancelled image picker');
-          // this.setState({
-          //   debugInfo: 'User cancelled image picker'
-          // });
         } else if (response.error) {
           console.log('ImagePicker Error: ', response.error);
-          // this.setState({
-          //   debugInfo: 'ImagePicker Error: '+ response.error
-          // });
         } else if (response.customButton) {
           console.log('User tapped custom button: ', response.customButton);
-          // this.setState({
-          //   debugInfo: 'User tapped custom button'
-          // });
           alert(response.customButton);
         } else {
-          // const source = { uri: response.uri };
-          // console.log('response b', JSON.stringify(response));
           this.setState({
             filePath: response,
             fileData: response.data,
             fileUri: response.assets[0].uri,
             fileBase64: response.assets[0].base64
           });
-          // this.setState({resourcePath: response});
         }
       },
     )
@@ -163,7 +123,7 @@ class AddItem extends Component {
       debugInfo: 'sendToServer' + this.state.inputEAN,
       loading: true
     });
-    fetch('http://e-strix.pl/megafind/api/create.php', {
+    fetch('http://192.168.49.103/api/create.php', {
       method: 'POST',
       headers: {
           Accept: 'application/json',
@@ -190,12 +150,15 @@ class AddItem extends Component {
 
   renderFileData() {
     if (this.state.fileBase64) {
-      return <Image source={{ uri: 'data:image/jpeg;base64,' + this.state.fileBase64 }}
-        style={styles.images}
-      />
+      return <Image
+      source={{
+        uri: 'data:image/jpeg;base64,' + this.state.fileBase64,
+      }}
+      style={{ width: 200, height: 200 }}
+    /> 
     } else {
       return <Image source={require('../assets/blank.png')}
-        style={styles.images}
+      style={{ width: 200, height: 200 }}
       />
     }
   }
@@ -218,30 +181,27 @@ class AddItem extends Component {
     return (
       <SafeAreaView style={{flex: 1}}>
         <View style={styles.container}>
-        <Text>ean: {this.state.inputEAN}</Text>
         <TextInput 
           placeholder='EAN'
+          style={styles.inputField}
           keyboardType = 'numeric'
           value={this.state.inputEAN}
           onChangeText={(text) => this.setState({inputEAN:text})}
         />
-          <Image
-            source={{
-              uri: 'data:image/jpeg;base64,' + this.state.fileBase64,
-            }}
-            style={{ width: 200, height: 200 }}
-          />
-
+          
           <Text style={{ alignItems: 'center' }}>
             {this.state.debugInfo}
           </Text>
-          <TouchableOpacity onPress={this.launchCamera} style={styles.btnSection}  >
-            <Text style={styles.btnText}>Directly Launch Camera</Text>
+          <TouchableOpacity onPress={this.launchCamera}  
+          
+            style={styles.chooseImage}>
+            {this.renderFileData()}
+            <Text style={styles.btnText}>Zrób zdjęcie</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={this.selectFile} style={styles.button}  >
+          {/* <TouchableOpacity onPress={this.selectFile} style={styles.button}  >
               <Text style={styles.buttonText}>Select File</Text>
-          </TouchableOpacity>  
+          </TouchableOpacity>   */}
 
           <TouchableOpacity onPress={this.sendToServer} style={styles.button}  >
               <Text style={styles.buttonText}>Wyślij na serwer</Text>
@@ -254,20 +214,30 @@ class AddItem extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
+    // flex: 1,
+    // padding: 5,
+    // alignItems: 'center',
+    // justifyContent: 'center',
     backgroundColor: '#fff'
   },
-  button: {
-    width: 250,
-    height: 60,
-    backgroundColor: '#3740ff',
+  chooseImage: {
     alignItems: 'center',
-    justifyContent: 'center',
+  },
+  button: {
+    // width: 250,
+    // height: 60,
+    // backgroundColor: '#3740ff',
+    // alignItems: 'center',
+    // justifyContent: 'center',
+    // borderRadius: 4,
+    // marginBottom:4  
+    margin: 20,
+    padding: 14,
+    backgroundColor: '#3740ff',
     borderRadius: 4,
-    marginBottom:4  
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 
   btnSection: {
@@ -283,7 +253,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 15,
     color: '#fff'
-  }
+  },
+  
+  inputField: {
+    color: 'black',
+    fontSize: 17,
+    textAlign: 'center',
+    borderColor: 'black',
+    borderBottomWidth: 1
+  },
 });
 
 export default AddItem;
