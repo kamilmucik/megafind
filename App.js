@@ -24,7 +24,7 @@ export default class App extends Component{
                           title: 'Wyszukaj' ,
                           headerLeft: () => (
                             <TouchableOpacity onPress={() => navigation.navigate("AddItem")} > 
-                              <Text style={{color: 'black', marginLeft: 10}}>Dodaj</Text>
+                              <Text style={{color: 'black', marginLeft: 10}}>Dodaj+</Text>
                             </TouchableOpacity>
                           ),
                           headerRight: () => (

@@ -1,4 +1,5 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
+import  QRCodeScanner from 'react-native-qrcode-scanner';
 import {
   SafeAreaView,
   View,
@@ -8,7 +9,7 @@ import {
   FlatList,
   ActivityIndicator,
   TextInput,
-  Button
+  Image
 } from 'react-native';
 import PackageJson from '../package'    // where package is the package.json file
 
@@ -17,9 +18,11 @@ function Feed({ navigation }) {
 
   const defaultList = [];
 
+  const scanner = useRef(null);
   const [loading, setLoading] = useState(true);
   const [dataSource, setDataSource] = useState(defaultList);
   const [searchEan, setSearchEan] = useState('');
+  const [scan, setScan] = useState(false);
 
   useEffect(() => getData(), defaultList);
 
@@ -32,7 +35,7 @@ function Feed({ navigation }) {
       .then((response) => response.json())
       .then((responseJson) => {
         //Successful response
-        setDataSource([...responseJson.results]); 
+        setDataSource([...responseJson.results]);
         // setDataSource([...dataSource, ...responseJson.results]);
         setLoading(false);
       })
@@ -98,18 +101,37 @@ function Feed({ navigation }) {
 
   };
 
+  const launchScannerCamera = () => {
+    setScan(true);
+  }
 
-  return (
+  const onSuccess = e => {
+    setSearchEan(e.data);
+    setScan(false);
+  }
+
+  return !scan ? (
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.container}>
       <Text style={styles.versionText}>v: {PackageJson.version} </Text>
-      <TextInput 
-        placeholder='EAN'
-        keyboardType = 'numeric'
-        style={styles.inputField}
-        value={searchEan}
-        onChangeText={(text) => setSearchEan(text)}
-        />
+
+
+          <View style={styles.sectionStyle}>
+            <TextInput
+              placeholder='EAN'
+              keyboardType = 'numeric'
+              style={styles.inputField}
+              value={searchEan}
+              onChangeText={(text) => setSearchEan(text)}
+            />
+            <TouchableOpacity onPress={launchScannerCamera} style={styles.button2}>
+              <Image source={require('../assets/barcode.png')}
+                style={{ width: 60, height: 38 }}
+              />
+            </TouchableOpacity>
+          </View>
+
+
       <View >
         <TouchableOpacity
           activeOpacity={0.9}
@@ -133,7 +155,28 @@ function Feed({ navigation }) {
         />
       </View>
     </SafeAreaView>
-  );
+  ): (
+    <SafeAreaView style={{flex: 1}}>
+      <View style={{flex: 1}}>
+        <QRCodeScanner
+          onRead={onSuccess}
+          ref={scanner}
+          reactivate={true}
+          showMarker={true}
+          bottomContent={
+            <View style={{flexDirection: 'row'}}>
+              <TouchableOpacity style={styles.sectionStyle} onPress={() => scanner.current.reactivate()}>
+                <Text style={styles.buttonText2}>OK. Got it!</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.sectionStyle} onPress={() => setScan(false)}>
+                <Text style={styles.buttonText2}>Stop</Text>
+              </TouchableOpacity>
+              </View>
+          }
+        />
+      </View>
+    </SafeAreaView>
+  ) ;
 }
 
 const styles = StyleSheet.create({
@@ -163,10 +206,10 @@ const styles = StyleSheet.create({
   },
   inputField: {
     color: 'black',
-    fontSize: 17,
+    flex: 5,
+    fontSize: 14,
     textAlign: 'center',
-    borderColor: 'black',
-    borderBottomWidth: 1
+    borderColor: 'black'
   },
   itemStyle: {
     color: 'black',
@@ -177,6 +220,18 @@ const styles = StyleSheet.create({
     color: 'gray',
     fontSize: 10,
     textAlign: 'right',
+  },
+
+  sectionStyle: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderWidth: 0.5,
+    borderColor: '#000',
+    height: 40,
+    borderRadius: 5,
+    margin: 10,
   },
 });
 

@@ -1,6 +1,8 @@
-import React, {Component} from 'react';
+import React, {Component, useEffect, useState, useRef} from 'react';
+import  QRCodeScanner from 'react-native-qrcode-scanner';
+import { RNCamera } from 'react-native-camera';
 import * as ImagePicker from "react-native-image-picker"
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, Button, Image, SafeAreaView,PermissionsAndroid } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Button, Image, SafeAreaView,PermissionsAndroid, TouchableHighlight } from 'react-native';
 
 const requestCameraPermission = async () => {
   try {
@@ -24,24 +26,21 @@ const requestCameraPermission = async () => {
   }
 };
 
-class AddItem extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      filepath: {
-        data: '',
-        uri: 'www'
-      },
-      debugInfo: '',
-      fileData: '',
-      fileBase64: '',
-      fileUri: '',
-      inputEAN: '',
-      loading: true
-    }
-  }
 
-  launchCamera = () => {
+
+const AddItem = () => {
+  const scanner = useRef(null);
+  const [debugInfo, setDebugInfo] = useState('');
+  const [inputEAN, setInputEAN] = useState('');
+  const [fileBase64, setFileBase64] = useState('');
+  const [scan, setScan] = useState(false);
+  const [result, setResult] = useState(null);
+
+  useEffect(()=> {
+    setResult(null);
+  },[])
+
+  const launchCamera = () => {
     let options = {
       includeBase64: true,
       mediaType: 'photo',
@@ -55,7 +54,7 @@ class AddItem extends Component {
     };
 
     requestCameraPermission();
-    
+
     ImagePicker.launchCamera(options, async (response) => {
       if (response.didCancel) {
         console.log('User cancelled image picker');
@@ -65,64 +64,18 @@ class AddItem extends Component {
         console.log('User tapped custom button: ', response.customButton);
         alert(response.customButton);
       } else {
-        this.setState({
-          filePath: response,
-          fileData: response.data,
-          fileUri: response.assets[0].uri,
-          fileBase64: response.assets[0].base64
-        });
+        setFileBase64(response.assets[0].base64);
       }
     });
 
   }
 
-  selectFile = () => {
-    var options = {
-      title: 'Select Image',
-      customButtons: [
-        { 
-          name: 'customOptionKey', 
-          title: 'Choose file from Custom Option' 
-        },
-      ],
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-      },
-    };
-    ImagePicker.launchImageLibrary(
-      {
-        mediaType: 'photo',
-        includeBase64: true,
-        maxHeight: 200,
-        maxWidth: 200,
-      },
-      (response) => {  
-        if (response.didCancel) {
-          console.log('User cancelled image picker');
-        } else if (response.error) {
-          console.log('ImagePicker Error: ', response.error);
-        } else if (response.customButton) {
-          console.log('User tapped custom button: ', response.customButton);
-          alert(response.customButton);
-        } else {
-          this.setState({
-            filePath: response,
-            fileData: response.data,
-            fileUri: response.assets[0].uri,
-            fileBase64: response.assets[0].base64
-          });
-        }
-      },
-    )
-  };
+const launchScannerCamera = () => {
+  setScan(true);
+}
 
-  sendToServer = () => {
-    // console.log('sendToServer: ' + this.state.fileBase64);
-    this.setState({
-      debugInfo: 'sendToServer' + this.state.inputEAN,
-      loading: true
-    });
+
+  const sendToServer = () => {
     fetch('http://e-strix.pl/megafind/api/create.php', {
       method: 'POST',
       headers: {
@@ -130,32 +83,27 @@ class AddItem extends Component {
           'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        _ean: this.state.inputEAN,
-        _image1_base64: this.state.fileBase64
+        _ean: inputEAN,
+        _image1_base64: fileBase64
       })
   })
   .then((response) => response.json())
       .then((responseJson) => {
-        //Successful response
-        //Increasing the offset for the next API call
-        this.setState({
-          debugInfo:  responseJson.message ,
-          loading: false
-        });
+        setDebugInfo(responseJson.message);
       })
       .catch((error) => {
         console.error(error);
       });
   };
 
-  renderFileData() {
-    if (this.state.fileBase64) {
+  const renderFileData = () => {
+    if (fileBase64) {
       return <Image
       source={{
-        uri: 'data:image/jpeg;base64,' + this.state.fileBase64,
+        uri: 'data:image/jpeg;base64,' + fileBase64,
       }}
       style={{ width: 200, height: 200 }}
-    /> 
+    />
     } else {
       return <Image source={require('../assets/blank.png')}
       style={{ width: 200, height: 200 }}
@@ -163,81 +111,113 @@ class AddItem extends Component {
     }
   }
 
-  renderFileUri() {
-    if (this.state.fileUri) {
-      return <Image
-        source={{ uri: this.state.fileUri }}
-        style={styles.images}
-      />
-    } else {
-      return <Image
-        source={require('../assets/blank.png')}
-        style={styles.images}
-      />
-    }
+  const onSuccess = e => {
+    setInputEAN(e.data);
+    setScan(false);
   }
 
-  render() {
-    return (
+    return !scan ? (
       <SafeAreaView style={{flex: 1}}>
-        <View style={styles.container}>
-        <TextInput 
-          placeholder='EAN'
-          style={styles.inputField}
-          keyboardType = 'numeric'
-          value={this.state.inputEAN}
-          onChangeText={(text) => this.setState({inputEAN:text})}
-        />
-          
+        <View style={{flex: 1}}>
           <Text style={{ alignItems: 'center' }}>
-            {this.state.debugInfo}
+            {debugInfo}
           </Text>
-          <TouchableOpacity onPress={this.launchCamera}  
-          
+          <View style={styles.sectionStyle}>
+            <TextInput
+              placeholder='EAN'
+              style={styles.inputField}
+              keyboardType = 'numeric'
+              value={inputEAN}
+              onChangeText={(text) => setInputEAN(text)}
+            />
+            <TouchableOpacity onPress={launchScannerCamera} style={styles.button2}>
+              <Image source={require('../assets/barcode.png')}
+                style={{ width: 60, height: 38 }}
+              />
+            </TouchableOpacity>
+          </View>
+
+
+          <TouchableOpacity onPress={launchCamera}
             style={styles.chooseImage}>
-            {this.renderFileData()}
+            {renderFileData()}
             <Text style={styles.btnText}>Zrób zdjęcie</Text>
           </TouchableOpacity>
 
-          {/* <TouchableOpacity onPress={this.selectFile} style={styles.button}  >
-              <Text style={styles.buttonText}>Select File</Text>
-          </TouchableOpacity>   */}
-
-          <TouchableOpacity onPress={this.sendToServer} style={styles.button}  >
+          <TouchableOpacity onPress={sendToServer} style={styles.button}  >
               <Text style={styles.buttonText}>Wyślij na serwer</Text>
-          </TouchableOpacity>       
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
-    );
+    )  : (
+      <SafeAreaView style={{flex: 1}}>
+        <View style={{flex: 1}}>
+          <QRCodeScanner
+            onRead={onSuccess}
+            ref={scanner}
+            reactivate={true}
+            showMarker={true}
+            bottomContent={
+              <View style={{flexDirection: 'row'}}>
+                <TouchableOpacity style={styles.sectionStyle} onPress={() => scanner.current.reactivate()}>
+                  <Text style={styles.buttonText2}>OK. Got it!</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.sectionStyle} onPress={() => setScan(false)}>
+                  <Text style={styles.buttonText2}>Stop</Text>
+                </TouchableOpacity>
+                </View>
+
+            }
+          />
+
+          <Text style={{ alignItems: 'center' }}>
+            {debugInfo}
+          </Text>
+        </View>
+      </SafeAreaView>
+    )
+
   }
-}
+
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
-    // padding: 5,
-    // alignItems: 'center',
-    // justifyContent: 'center',
+
     backgroundColor: '#fff'
   },
   chooseImage: {
+
     alignItems: 'center',
   },
   button: {
-    // width: 250,
-    // height: 60,
-    // backgroundColor: '#3740ff',
-    // alignItems: 'center',
-    // justifyContent: 'center',
-    // borderRadius: 4,
-    // marginBottom:4  
-    margin: 20,
+    margin: 10,
     padding: 14,
     backgroundColor: '#3740ff',
     borderRadius: 4,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+
+
+  button2: {
+    // backgroundColor: '#3740ff',
+    borderRadius: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 4,
+  },
+
+  sectionStyle: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderWidth: 0.5,
+    borderColor: '#000',
+    height: 40,
+    borderRadius: 5,
+    margin: 10,
   },
 
   btnSection: {
@@ -254,13 +234,36 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#fff'
   },
-  
+  buttonText2: {
+    textAlign: 'center',
+    fontSize: 20,
+    color: '#DCDCDC'
+  },
+
   inputField: {
     color: 'black',
-    fontSize: 17,
+    flex: 5,
+    fontSize: 14,
     textAlign: 'center',
-    borderColor: 'black',
-    borderBottomWidth: 1
+    borderColor: 'black'
+  },
+
+  buttonStyle: {
+    fontSize: 16,
+    color: 'white',
+    backgroundColor: 'green',
+    padding: 5,
+    margin: 10,
+    minWidth: 250,
+  },
+  buttonTextStyle: {
+    padding: 5,
+    color: 'white',
+    textAlign: 'center',
+  },
+  textLinkStyle: {
+    color: 'blue',
+    paddingVertical: 20,
   },
 });
 
